@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stage id="game:stage_demo" version="1.0" lang="zh-CN" strict="true">
+
+    <meta title="功能展示舞台" author="Ellie"/>
+
+    <!-- 角色定义 -->
+    <characters>
+        <!-- 标准写法 -->
+        <character id="a" name="Alice" ref="game:alice" type="main"/>
+        <character id="b" name="Bob" ref="game:bob" type="main"/>
+
+        <!-- 简写角色定义：标签名就是角色 id -->
+        <n name="Narrator" ref="game:narrator" type="narrator"/>
+    </characters>
+
+    <!-- 资源定义，可选，但很推荐 -->
+    <assets>
+        <bg id="room_day" src="bg/room_day.png"/>
+        <bg id="room_night" src="bg/room_night.png"/>
+
+        <appearance id="alice_normal" src="char/alice/normal.png"/>
+        <appearance id="alice_happy" src="char/alice/happy.png"/>
+        <appearance id="bob_normal" src="char/bob/normal.png"/>
+
+        <music id="bgm_opening" src="audio/bgm/opening.ogg"/>
+        <music id="bgm_tension" src="audio/bgm/tension.ogg"/>
+
+        <sfx id="door_close" src="audio/sfx/door_close.wav"/>
+        <sfx id="choice_click" src="audio/sfx/choice_click.wav"/>
+    </assets>
+
+    <lore>
+
+        <!-- ===== 背景 ===== -->
+        <!-- 映射到 Events.BackgroundEvent -->
+        <background id="bg_intro" backgroundId="room_day" backgroundColor="000000" duration="PT1S"/>
+
+        <!-- ===== 音乐 ===== -->
+        <!-- 映射到 Events.Music.Start -->
+        <music-start id="bgm1"
+                     musicId="bgm_opening"
+                     volume="0.8"
+                     repeat="true"
+                     fadeIn="1.5"
+                     fadeOut="0.0"/>
+
+        <!-- ===== 角色显隐 ===== -->
+        <!-- 映射到 Events.Character.Visibility -->
+        <character-visibility id="alice_show" characterId="a" visible="true"/>
+        <character-visibility id="bob_show" characterId="b" visible="true"/>
+
+        <!-- ===== 角色是否高亮/活跃 ===== -->
+        <!-- 映射到 Events.Character.Activity -->
+        <character-activity id="alice_active" characterId="a" active="true"/>
+        <character-activity id="bob_inactive" characterId="b" active="false"/>
+
+        <!-- ===== 角色外观 ===== -->
+        <!-- 映射到 Events.Character.Appearance -->
+        <character-appearance id="alice_normal_look" characterId="a" appearanceId="alice_normal"/>
+        <character-appearance id="bob_normal_look" characterId="b" appearanceId="bob_normal"/>
+
+        <!-- ===== 角色移动 ===== -->
+        <!-- 映射到 Events.Character.Movement -->
+        <character-movement id="alice_move_in"
+                            characterId="a"
+                            duration="PT0.6S"
+                            x="0.25"
+                            y="0.0"
+                            rotation="0.0"
+                            flipped="false"
+                            animationType="easeOut"/>
+
+        <character-movement id="bob_move_in"
+                            characterId="b"
+                            duration="PT0.6S"
+                            x="0.75"
+                            y="0.0"
+                            rotation="0.0"
+                            flipped="false"
+                            animationType="easeOut"/>
+
+        <!-- ===== 角色动画 ===== -->
+        <!-- 映射到 Events.Character.Animation -->
+        <character-animation id="alice_blink"
+                             characterId="a"
+                             duration="PT0.5S"
+                             animationId="blink"/>
+
+        <!-- ===== 对话 / 文本 ===== -->
+        <!-- 标准 say 写法：映射到 Events.TextEvent -->
+        <say id="line_001" characterId="a" displayName="Alice" voiceId="alice_001">
+            早上好，欢迎来到功能展示舞台。
+        </say>
+
+        <say id="line_002" characterId="b" displayName="Bob">
+            这里会展示当前脚本系统支持的所有主要能力。
+        </say>
+
+        <!-- 简写对白：标签名命中角色 id 时，core 解析成 SayNode，再映射为 TextEvent -->
+        <a id="line_003">这就是角色简写对白。</a>
+        <b id="line_004">比完整的 &lt;say&gt; 写法更简洁。</b>
+
+        <!-- 旁白：characterId 可为空 -->
+        <say id="line_005">
+            房间里很安静，只能听见空调的声音。
+        </say>
+
+        <!-- ===== 音效 ===== -->
+        <!-- 映射到 Events.SoundEffectEvent -->
+        <sound id="sfx_001"
+               soundId="door_close"
+               volume="1.0"
+               pitch="1.0"
+               repeatTime="1"/>
+
+        <!-- ===== 等待 ===== -->
+        <!-- 映射到 Events.WaitEvent -->
+        <wait id="wait_001" duration="PT1.2S"/>
+
+        <!-- ===== 业务/系统事件 ===== -->
+        <!-- 映射到 Events.EventEvent -->
+        <event id="evt_001" eventId="game:unlock_cg_01"/>
+        <event id="evt_002" eventId="game:analytics_stage_enter"/>
+
+        <!-- ===== 变量设置 ===== -->
+        <!-- core 内部逻辑命令，不映射到 Event -->
+        <set id="set_001" var="affection.a" op="assign" expr="1"/>
+        <set id="set_002" var="hasKey" op="assign" expr="true"/>
+        <set id="set_003" var="coins" op="assign" expr="10"/>
+        <set id="set_004" var="coins" op="add" expr="5"/>
+
+        <!-- ===== 条件跳转 ===== -->
+        <!-- core 内部逻辑命令 -->
+        <if id="if_001" test="hasKey == true" then="label_has_key" else="label_no_key"/>
+
+        <label id="label_no_key"/>
+        <say id="line_006" characterId="b">你没有钥匙，所以只能在门外等待。</say>
+        <jump id="jump_001" to="label_after_key_check"/>
+
+        <label id="label_has_key"/>
+        <say id="line_007" characterId="a">你有钥匙，可以继续往前走。</say>
+
+        <label id="label_after_key_check"/>
+
+        <!-- ===== 选择 ===== -->
+        <!-- 映射到 Events.SelectionEvent -->
+        <!-- duration 存在时，运行时可能返回 OptionSelected(index=null, optionId=null) -->
+        <choice id="choice_001" prompt="你要怎么回应 Alice？" duration="PT5S" noSelectionPolicy="CONTINUE">
+            <opt id="opt_greet" text="向她打招呼" to="label_greet"/>
+            <opt id="opt_ignore" text="假装没看见" to="label_ignore"/>
+            <opt id="opt_secret" text="只有有钥匙的人能选这个" to="label_secret" cond="hasKey == true"/>
+        </choice>
+
+        <label id="label_greet"/>
+        <sound id="sfx_choice_1" soundId="choice_click" volume="0.9" pitch="1.0" repeatTime="1"/>
+        <set id="set_005" var="affection.a" op="add" expr="1"/>
+        <character-appearance id="alice_happy_look" characterId="a" appearanceId="alice_happy"/>
+        <character-activity id="alice_focus" characterId="a" active="true"/>
+        <character-activity id="bob_unfocus" characterId="b" active="false"/>
+        <say id="line_008" characterId="a" displayName="Alice">你好呀，看起来你今天心情不错。</say>
+        <jump id="jump_002" to="label_after_choice"/>
+
+        <label id="label_ignore"/>
+        <sound id="sfx_choice_2" soundId="choice_click" volume="0.9" pitch="0.95" repeatTime="1"/>
+        <set id="set_006" var="affection.a" op="sub" expr="1"/>
+        <character-activity id="alice_unfocus" characterId="a" active="false"/>
+        <character-activity id="bob_focus" characterId="b" active="true"/>
+        <say id="line_009" characterId="b">你这样会不会太冷淡了？</say>
+        <jump id="jump_003" to="label_after_choice"/>
+
+        <label id="label_secret"/>
+        <sound id="sfx_choice_3" soundId="choice_click" volume="1.0" pitch="1.1" repeatTime="1"/>
+        <event id="evt_003" eventId="game:secret_route_opened"/>
+        <say id="line_010" characterId="a">原来你真的带着钥匙……那我们走秘密通道吧。</say>
+        <jump id="jump_004" to="label_after_choice"/>
+
+        <label id="label_after_choice"/>
+
+        <!-- ===== 背景切换 ===== -->
+        <background id="bg_night" backgroundId="room_night" backgroundColor="000000" duration="PT1.5S"/>
+
+        <!-- ===== 音乐控制 ===== -->
+        <!-- 映射到 Events.Music.Control -->
+        <music-control id="bgm_control_1"
+                       controlSourceId="bgm1"
+                       volume="0.5"
+                       pitch="1.0"
+                       repeat="true"
+                       fadeIn="0.0"
+                       fadeOut="1.5"
+                       keepPlaying="true"/>
+
+        <!-- 也可以开新曲 -->
+        <music-start id="bgm2"
+                     musicId="bgm_tension"
+                     volume="0.7"
+                     repeat="true"
+                     fadeIn="2.0"
+                     fadeOut="0.0"/>
+
+        <say id="line_011" characterId="b">天色暗下来了，气氛也变得紧张了。</say>
+
+        <!-- ===== 角色翻转 / 再移动 ===== -->
+        <character-movement id="alice_turn"
+                            characterId="a"
+                            duration="PT0.4S"
+                            x="0.30"
+                            y="0.0"
+                            rotation="0.0"
+                            flipped="true"
+                            animationType="easeInOut"/>
+
+        <!-- ===== 音乐停止 ===== -->
+        <!-- 映射到 Events.Music.Stop -->
+        <music-stop id="bgm_stop_1" stopSourceId="bgm2"/>
+
+        <!-- ===== 收尾 ===== -->
+        <character-visibility id="bob_hide" characterId="b" visible="false"/>
+        <wait id="wait_ending" duration="PT0.8S"/>
+        <say id="line_012">以上就是当前 API 能覆盖的主要事件类型。</say>
+        <event id="evt_end" eventId="game:stage_demo_finished"/>
+
+    </lore>
+</stage>
