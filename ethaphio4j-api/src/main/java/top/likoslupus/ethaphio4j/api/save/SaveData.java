@@ -1,30 +1,27 @@
-package top.likoslupus.ethaphio4j.api;
+package top.likoslupus.ethaphio4j.api.save;
 
 import top.likoslupus.ethaphio4j.api.value.Value;
 
 import java.util.Collections;
 import java.util.Map;
 
-public record RunnerState(
+public record SaveData(
         String stageId,
         int instructionPointer,
-        RunnerStatus status,
         Map<String, Value> variables,
-        String currentCommandId
+        Map<String, String> metadata
 ) {
 
-    public RunnerState(
+    public SaveData(
             String stageId,
             int instructionPointer,
-            RunnerStatus status,
             Map<String, Value> variables,
-            String currentCommandId
+            Map<String, String> metadata
     ) {
         this.stageId = stageId;
         this.instructionPointer = instructionPointer;
-        this.status = status;
         this.variables = variables == null ? Collections.emptyMap() : Map.copyOf(variables);
-        this.currentCommandId = currentCommandId;
+        this.metadata = metadata == null ? Collections.emptyMap() : Map.copyOf(metadata);
     }
 
 }

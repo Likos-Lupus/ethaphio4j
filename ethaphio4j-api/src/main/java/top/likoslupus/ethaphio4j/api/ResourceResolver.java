@@ -1,5 +1,10 @@
 package top.likoslupus.ethaphio4j.api;
 
-public class ResourceResolver {
+import java.io.IOException;
+import java.io.InputStream;
+
+public interface ResourceResolver {
+
+    InputStream open(String uri) throws IOException;
 
 }
